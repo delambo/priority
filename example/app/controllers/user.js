@@ -79,10 +79,6 @@ module.exports = {
     }
   },
 
-  middleware: {
-    isLoggedIn: ['edit', 'update', 'fromTo']
-  },
-
   index: function(req, res) {
     res.priority(users);
   },
