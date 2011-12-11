@@ -9,22 +9,25 @@ Organize an Express app with mvc conventions.
 ###Controllers:
 
 
-A Controller can declare any of the following reserved keys for setup + wiring:
+By convention, a controller's file name dictates the kind of model/routes that it manages - a `user` controller would be defined in the following file `/controllers/user.js` and would be routed to the `[APP]/users` uri path. A controller should export a module with any of the following reserved keys for setup + wiring:
 
->  `initialize` : Function called after the controller boots with an Express app instance.
+* `initialize` : Function called after the controller boots with an Express app instance.
  
 
->  `routes` : Object that is used to wire actions with routes in Express.
+* `routes` : Object that is used to wire actions with routes in Express.
 This is a simple convenience that delegates to the Express routing API.
 
 
+```javascript
           routes: {  
             fromTo: '/:from([0-9]+)-:to([0-9]+)',  //  */users/1-3
             userName: '/:id([0-9]+)/name'          //  */users/1/name
           }
+```
 
-> `params` : Object that is used to wire params to a callback. This simply delegates to the Express Param Pre-Conditions.
+* `params` : Object that is used to wire params to a callback. This simply delegates to the Express Param Pre-Conditions.
 
+```javascript
           params: {
             // pre-process any route with an `:id` param with the following fn
             id: function(req, res, next, id) {
@@ -34,49 +37,53 @@ This is a simple convenience that delegates to the Express routing API.
              });
            }
          }
+```
 
-> CRUD Actions are also reserved and optional. CRUD actions are auto-wired with the Express routing API, and all `:id` params are mapped with a numeric restriction - ([0-9]+) - but may be overridden in the `routes` object. The following are the reserved CRUD actions and their default routes.
+* CRUD Actions are also reserved and optional. CRUD actions are auto-wired with the Express routing API, and all `:id` params are mapped with a numeric restriction - ([0-9]+) - but may be overridden in the `routes` object. The following are the reserved CRUD actions and their default routes.
 
->> `index` : GET `/users`
+> `index` : GET `/users`
 
->> `show` : GET `/users/:id`
+> `show` : GET `/users/:id`
 
->> `create` : POST `/users/:id`
+> `create` : POST `/users/:id`
 
->> `edit` : GET `/users/:id/edit`
+> `edit` : GET `/users/:id/edit`
 
->> `update` : PUT `/users/:id`
+> `update` : PUT `/users/:id`
 
->> `destroy` : DELETE `/users/:id`
+> `destroy` : DELETE `/users/:id`
 
-> Custom actions can be defined by prepending an Express Routing verb - `get`, `post`, `put`, and `del` - to an action name. The following are some custom action definitions:
+* Custom actions can be defined by prepending an Express Routing verb - `get`, `post`, `put`, and `del` - to an action name. The following are some custom action definitions:
 
->> `getFromTo` : By convention, this maps to the `fromTo` key in the `routes` object.
+> `getFromTo` : Routes a GET request. By convention, this maps to the `fromTo` key in the `routes` object.
  
->> `putUserName` : By convention, this maps to the `userName` key in the `routes` object. 
+> `putUserName` : Rountes a POST request. By convention, this maps to the `userName` key in the `routes` object.
 
-> Any other, non-action and non-reserved, keys with function values must be defined with a prepended underscore:
+* Any other, non-action and non-reserved, keys with function values must be defined with a prepended underscore:
 
->> `_myPrivateFunction`
+         `_myPrivateFunction`
 
-> Any action response that calls `priority` will forward to the respectively named view by convention. 
+Any action response that calls `priority` will forward to the respectively named view by convention. 
 
+```javascript
           index: function(req, res) {
             res.priority(this._getListOfUsers());
           }
+```
 
-> `priority` delegates to the Express `res.render`. For example, the following actions will map to views:
+`priority` delegates to the Express `res.render`. For example, the following actions will map to views:
 
->> `index` : [VIEW_DIR]/user/index.[VIEW_EXTENSION]
+> `index` : [VIEW_DIR]/user/index.[VIEW_EXTENSION]
 
->> `show` : [VIEW_DIR]/user/show.[VIEW_EXTENSION]
+> `show` : [VIEW_DIR]/user/show.[VIEW_EXTENSION]
 
->> `getFromTo` : [VIEW_DIR]/user/fromTo.[VIEW_EXTENSION]
+> `getFromTo` : [VIEW_DIR]/user/fromTo.[VIEW_EXTENSION]
 
 ###Boot
 
-> To start an app using `priority` - grab the module and call `boot` with a custom config:
+To start an app using `priority`, grab the module and call `boot` with a custom config:
 
+```javascript
           var express = require('express'),
             app = express.createServer(),
             mvc = require('priority');
@@ -94,5 +101,6 @@ This is a simple convenience that delegates to the Express routing API.
          });
          ...
          app.listen(3000);
+```
 
 
